@@ -1,69 +1,73 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React, { useState } from "react"
+import ReactDOM from "react-dom"
+import './index.css'
 
-const Header = ({ course}) => {
-    return (
-        <div>
-            <h1>
-                {course}
-            </h1>
-        </div>
+const Button = ({ text, onClick }) => <button onClick={onClick}>{text}</button>;
+
+const Statistic = ({ text, result}) => {
+    return(
+        <tr>
+            <th> {text} </th>
+            <th> {result} </th>
+        </tr>
     )
 }
 
-const Content = ({parts}) => {
-    return (
-        <div>
-            {parts.map((item, index) => (
-                <Part key={index} part={item.name} exercises={item.exercises} />
-            ))}
-        </div>
-    )
+const Statistics = ({
+    good,
+    neutral,
+    bad,
+    allStats,
+    getAverage,
+    getPositive,
+}) => {
+    if (allStats === 0 ) {
+        return <div>Ei huonoa palutetta</div>;
+    } else {
+        return (
+            <table>
+                <tbody className="text">
+                    <Statistic text="good" result={good} />
+                    <Statistic text="bad" result={bad} />
+                    <Statistic text="neutral" result={neutral} />
+                    <Statistic text="all" result={allStats} />
+                    <Statistic text="average" result={getAverage} />
+                    <Statistic text="positive" result={getPositive} />
+                </tbody>
+            </table>
+        )
+    }
 }
 
-const Part = ({part, exercises}) => {
-    return (
-        <p>
-            {part} {exercises}
-        </p>
-    )
-}
+const App =()=> {
+    const [good, setGood] = useState(0);
+    const [bad, setBad] = useState(0);
+    const [neutral, setNeutral] = useState(0);
 
-export const Total = ({ parts }) => {
-    const total = parts.reduce((acc, item) => acc + item.exercises, 0);
+    const totalStats = (good * 1) + (bad * -1) + (neutral * 0);
+    const allStats = good + bad + neutral;
+    const getAverage = totalStats ? ( totalStats / allStats ).toFixed(2) : 0;
+    const getPositive = allStats ? ((good / allStats) * 100).toFixed(0) : "0";
+
     return (
         <>
-            <p>Number of exercises</p>
+        <h1>Anna palautetta</h1>
+        <div className="btn">
+            <Button onClick={() => setGood(good + 1)} text="good" />
+            <Button onClick={() => setBad(bad + 1)} text="bad" />
+            <Button onClick={() => setNeutral(neutral + 1)} text="neutral" />
+        </div>
+        <h1>Statistiikka</h1>
+            <Statistics 
+                good={good}
+                bad={bad}
+                neutral={neutral}
+                allStats={allStats}
+                getAverage={getAverage}
+                getPositive={getPositive}
+            />
         </>
     )
 }
 
-const App =()=> {
-    const course = {
-        name: "Half stack app developement",
-        parts: [
-            {
-                name: "Fundamentals of React",
-                exercises: 10,
-            },
-            {
-                name: "Using props to pass data",
-                exercises: 7,
-            },
-            {
-                name: "State of a component",
-                exercises: 14,
-            },
-        ]
-    }
-
-    return (
-        <div>
-            <Header course={course.name} />
-            <Content parts={course.parts} />
-            <Total parts={course.parts} />
-        </div>
-    )
-}
-ReactDOM.render(<App />, 
-    document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));
