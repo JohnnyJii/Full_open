@@ -1,63 +1,69 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-const Header = (props) => {
+const Header = ({ course}) => {
     return (
-        <h1>{props.course.name}</h1>
-    )
-}
-const Part = (props) => {
-    const part = props.part
-    return (
-        <p> {part.name} {part.exercises} </p>
+        <div>
+            <h1>
+                {course}
+            </h1>
+        </div>
     )
 }
 
-const Content = (props)=> {
-    const parts = props.course.parts
+const Content = ({parts}) => {
+    return (
+        <div>
+            {parts.map((item, index) => (
+                <Part key={index} part={item.name} exercises={item.exercises} />
+            ))}
+        </div>
+    )
+}
+
+const Part = ({part, exercises}) => {
+    return (
+        <p>
+            {part} {exercises}
+        </p>
+    )
+}
+
+export const Total = ({ parts }) => {
+    const total = parts.reduce((acc, item) => acc + item.exercises, 0);
     return (
         <>
-        <Part part={parts[0]} />
-        <Part part={parts[1]} />
-        <Part part={parts[2]} />
+            <p>Number of exercises</p>
         </>
     )
 }
 
-const Total = (props) => {
-    const parts = props.course.parts
+const App =()=> {
+    const course = {
+        name: "Half stack app developement",
+        parts: [
+            {
+                name: "Fundamentals of React",
+                exercises: 10,
+            },
+            {
+                name: "Using props to pass data",
+                exercises: 7,
+            },
+            {
+                name: "State of a component",
+                exercises: 14,
+            },
+        ]
+    }
+
     return (
-        <p>Yhteensä {parts[0].exercises + parts[1].exercises + parts[2].exercises} tehtävää </p>
+        <div>
+            <Header course={course.name} />
+            <Content parts={course.parts} />
+            <Total parts={course.parts} />
+        </div>
     )
 }
-const App = () => {
-  const course = {
-      name: 'Half stack sovelluskehitys',
-      parts: [
-          {
-          name: 'Reactin perusteet',
-          exercises: 10
-        }, 
-        {
-            name: 'Teidon välitys propseilla',
-            exercises: 7
-        },
-        {
-            name: 'Komponenttien tila',
-            exercises: 14
-        }
-      ]
-  }
-
-
-  return (
-    <div>
-        <Header course={course} />
-        <Content course={course} />
-        <Total course={course} />
-
-    </div>
-  )
-}
-
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App />, 
+    document.getElementById("root"));
